@@ -1,3 +1,5 @@
+import com.mysql.cj.protocol.Resultset;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +29,7 @@ public class Login {
                 mC.insertarUsuarios(Integer.parseInt(idtextField1.getText()) ,nombretextField2.getText(),correotextField3.getText(), Integer.parseInt(edadtextField4.getText()));
             }
         });
+
         actualizarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -44,32 +47,36 @@ public class Login {
                     ps.setInt(4, Integer.parseInt(id));
                     ps.executeUpdate();
                 } catch (SQLException ex) {
-                    throw new RuntimeException();
+                    throw new RuntimeException(ex);
                 }
                 mC.modificarUsuario();
-
             }
         });
+
         mostrarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    String query = "SELECT * FROM usuarios";
+                StringBuilder result = new StringBuilder(); // To accumulate all results
 
-                    try (Connection con = Conexion.getConnection();
-                         PreparedStatement ps = con.prepareStatement(query)) {
-                        ResultSet rs = ps.executeQuery();
-                        while (rs.next()) {
-                            System.out.println(rs.getString("nombre"));
-                            System.out.println(rs.getString("correo"));
-                            System.out.println(rs.getInt("edad"));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                String query = "SELECT * FROM usuarios";
+                try (Connection con = Conexion.getConnection();
+                     PreparedStatement ps = con.prepareStatement(query)) {
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        // For each user, append their data to the result
+                        int id = rs.getInt("id");
+                        String nombre = rs.getString("nombre");
+                        String correo = rs.getString("correo");
+                        int edad = rs.getInt("edad");
+
+                        result.append(leerUsu(id, nombre, correo, edad)).append("\n\n");
                     }
-
-                    textArea1.setText(leerUsu);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
+
+                // Set the accumulated result to the JTextArea
+                textArea1.setText(result.toString());
             }
         });
 
@@ -81,14 +88,12 @@ public class Login {
         });
     }
 
-
-    private String leerUsu(String nombre, String correo, int edad) {
+    // Formats the user data
+    private String leerUsu(int id,String nombre, String correo, int edad) {
         return "\n  ---- SISTEMA DE REGISTROS ----" +
-                "\n " +
+                "\n Codgio ID: " + id +
                 "\n Nombre: " + nombre +
                 "\n Correo Electronico: " + correo +
-                "\n Edad: " + edad ;
+                "\n Edad: " + edad;
     }
-
-
 }
