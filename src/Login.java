@@ -13,7 +13,7 @@ public class Login {
     private JTextField edadtextField4;
     private JButton ingresarButton;
     private JButton mostrarButton;
-    private JTextArea textArea1;
+    public JTextArea textArea1;
     private JButton actualizarButton;
     private JButton eliminarButton1;
     public JPanel mainPanel;
@@ -53,10 +53,26 @@ public class Login {
         mostrarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //mC.leerUsuarios();
-                textArea1.setText(leerUsuarios());
+                try {
+                    String query = "SELECT * FROM usuarios";
+
+                    try (Connection con = Conexion.getConnection();
+                         PreparedStatement ps = con.prepareStatement(query)) {
+                        ResultSet rs = ps.executeQuery();
+                        while (rs.next()) {
+                            System.out.println(rs.getString("nombre"));
+                            System.out.println(rs.getString("correo"));
+                            System.out.println(rs.getInt("edad"));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    textArea1.setText(leerUsu);
+                }
             }
         });
+
         eliminarButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,19 +81,14 @@ public class Login {
         });
     }
 
-    private String leerUsuarios() {
-        String query = "SELECT * FROM usuarios";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getString("nombre"));
-                System.out.println(rs.getString("correo"));
-                System.out.println(rs.getInt("edad"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return query;
+
+    private String leerUsu(String nombre, String correo, int edad) {
+        return "\n  ---- SISTEMA DE REGISTROS ----" +
+                "\n " +
+                "\n Nombre: " + nombre +
+                "\n Correo Electronico: " + correo +
+                "\n Edad: " + edad ;
     }
+
+
 }

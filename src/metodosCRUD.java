@@ -21,6 +21,29 @@ public class metodosCRUD{
     }
 
 
+/*
+    public String leerUsuarios() {
+        String query = "SELECT * FROM usuarios";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getString("nombre"));
+                System.out.println(rs.getString("correo"));
+                System.out.println(rs.getInt("edad"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String leerUsu = leerUsu(nombre,correo, edad);
+        textArea1.setText(leerUsu);
+
+        return query;
+    }
+
+
+*/
+
 
     public void modificarUsuario(int id, String nombre, String correo, int edad) {
 
